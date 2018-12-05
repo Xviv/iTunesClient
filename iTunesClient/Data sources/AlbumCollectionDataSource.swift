@@ -11,7 +11,7 @@ import UIKit
 
 class AlbumCollectionDataSource: NSObject, UICollectionViewDataSource {
     
-    private var albums: [Album]
+    var albums: [Album]
     
     let pendingOperations = PendingOperations()
     let collectionView: UICollectionView
@@ -23,6 +23,7 @@ class AlbumCollectionDataSource: NSObject, UICollectionViewDataSource {
     }
     
     // MARK: - Data Source
+    
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
@@ -36,7 +37,7 @@ class AlbumCollectionDataSource: NSObject, UICollectionViewDataSource {
         let albumCell = collectionView.dequeueReusableCell(withReuseIdentifier: AlbumCell.reuseIdentifier, for: indexPath) as! AlbumCell
         
         //Alphabetically sorted array of albums
-        let sortedAlbums = albums.sorted{$0.censoredName < $1.censoredName}
+        let sortedAlbums = sortAlbums(albums)
         
         let album = sortedAlbums[indexPath.row]
         let viewModel = AlbumCellViewModel(album: album)
@@ -54,11 +55,19 @@ class AlbumCollectionDataSource: NSObject, UICollectionViewDataSource {
     // MARK: - Helper
     
     func album(at indexPath: IndexPath) -> Album {
-        return albums[indexPath.row]
+        let sortedAlbums = sortAlbums(albums)
+        
+        return sortedAlbums[indexPath.row]
     }
     
     func update(with albums: [Album]) {
         self.albums = albums
+    }
+    
+    func sortAlbums(_ album: [Album]) -> [Album] {
+        let sortedAlbums = album.sorted{$0.censoredName < $1.censoredName}
+        
+        return sortedAlbums
     }
     
     func downloadArtworkForAlbum(_ album: Album, atIndexPath indexPath: IndexPath) {
